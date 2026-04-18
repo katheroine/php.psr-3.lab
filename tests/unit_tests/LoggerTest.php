@@ -31,7 +31,7 @@ final class LoggerTest extends TestCase
     private Logger $logger;
 
     #[Test]
-    #[DataProvider('logLevelsProvider')]
+    #[DataProvider('properLogLevelsProvider')]
     public function logsMessageWithProperLevel(string $logLevel)
     {
         $message = 'Some message.';
@@ -43,6 +43,16 @@ final class LoggerTest extends TestCase
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
+    }
+
+    #[Test]
+    #[DataProvider('improperLogLevelsProvider')]
+    public function doesNotAllowForImproperLevel(string $logLevel)
+    {
+        $message = 'Some message.';
+
+        $this->expectException(\Psr\Log\InvalidArgumentException::class);
+        $this->logger->log($logLevel, $message, []);
     }
 
     #[Test]
@@ -73,7 +83,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function logLevelsProvider(): array
+    public static function properLogLevelsProvider(): array
     {
         return [
             ['emergency'],
@@ -84,6 +94,23 @@ final class LoggerTest extends TestCase
             ['notice'],
             ['info'],
             ['debug'],
+        ];
+    }
+
+    /**
+     * Provide improper log levels.
+     *
+     * @return array
+     */
+    public static function improperLogLevelsProvider(): array
+    {
+        return [
+            ['emergency room'],
+            ['nerd alert'],
+            ['hurricane'],
+            ['narcissistic personality disorder'],
+            ['Swedish deluge'],
+            ['Microsoft Windows'],
         ];
     }
 

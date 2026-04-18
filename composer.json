@@ -1,4 +1,7 @@
 {
+    "require": {
+        "psr/log": "^3.0"
+    },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
         "phpunit/phpunit": "^13.1"
