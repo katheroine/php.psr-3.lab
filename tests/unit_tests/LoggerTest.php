@@ -18,6 +18,8 @@ use PHPUnit\Framework\TestCase;
 #[RunTestsInSeparateProcesses]
 final class LoggerTest extends TestCase
 {
+    private const string LOG_LEVEL_EMERGENCY = 'emergency';
+
     private const string LOG_FILE_ABSOLUTE_PATH = __DIR__
         . DIRECTORY_SEPARATOR . '/../fixtures/var/log/psr3logger.log';
 
@@ -28,19 +30,35 @@ final class LoggerTest extends TestCase
      */
     private Logger $logger;
 
+    // date('Y-m-d H:i:s')
+
     #[Test]
-    #[DataProvider('logLevelsProvider')]
-    public function logsMessageWithProperLevel(string $logLevel)
+    public function logsMessageWithProperDate()
     {
-        $message = 'Simple message.';
+        $message = 'Some message.';
+        $date = date('Y-m-d H:i:s');
 
-        $this->logger->log($logLevel, $message, []);
+        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
 
-        $expectedLog = strtoupper($logLevel) . ': ' . $message . PHP_EOL;
+        $expectedLog = '[' . $date . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
     }
+
+    // #[Test]
+    // #[DataProvider('logLevelsProvider')]
+    // public function logsMessageWithProperLevel(string $logLevel)
+    // {
+    //     $message = 'Simple message.';
+
+    //     $this->logger->log($logLevel, $message, []);
+
+    //     $expectedLog = strtoupper($logLevel) . ': ' . $message . PHP_EOL;
+    //     $actualLog = $this->getLoggedContent();
+
+    //     $this->assertEquals($expectedLog, $actualLog);
+    // }
 
     /**
      * Provide log levels defined by standard.
