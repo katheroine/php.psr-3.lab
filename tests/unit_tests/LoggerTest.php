@@ -30,35 +30,43 @@ final class LoggerTest extends TestCase
      */
     private Logger $logger;
 
-    // date('Y-m-d H:i:s')
-
     #[Test]
-    public function logsMessageWithProperDate()
+    #[DataProvider('logLevelsProvider')]
+    public function logsMessageWithProperLevel(string $logLevel)
     {
         $message = 'Some message.';
         $date = date('Y-m-d H:i:s');
 
-        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
+        $this->logger->log($logLevel, $message, []);
 
-        $expectedLog = '[' . $date . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL;
+        $expectedLog = '[' . $date . '] ' . strtoupper($logLevel) . ': ' . $message . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
     }
 
-    // #[Test]
-    // #[DataProvider('logLevelsProvider')]
-    // public function logsMessageWithProperLevel(string $logLevel)
-    // {
-    //     $message = 'Simple message.';
+    #[Test]
+    public function logsMessageWithProperDate()
+    {
+        $message = 'Some message.';
 
-    //     $this->logger->log($logLevel, $message, []);
+        $date1 = date('Y-m-d H:i:s');
+        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
 
-    //     $expectedLog = strtoupper($logLevel) . ': ' . $message . PHP_EOL;
-    //     $actualLog = $this->getLoggedContent();
+        $date2 = date('Y-m-d H:i:s');
+        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
 
-    //     $this->assertEquals($expectedLog, $actualLog);
-    // }
+        $date3 = date('Y-m-d H:i:s');
+        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
+
+        $expectedLog =
+            '[' . $date1 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL
+            . '[' . $date2 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL
+            . '[' . $date3 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
 
     /**
      * Provide log levels defined by standard.
