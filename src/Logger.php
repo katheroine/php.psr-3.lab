@@ -12,4 +12,16 @@ namespace PHPLab\StandardPSR3;
 
 class Logger
 {
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     *
+     * @return void
+     */
+    public function log(mixed $level, string $message, array $context = []): void
+    {
+    }
 }
