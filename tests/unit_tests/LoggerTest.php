@@ -29,7 +29,7 @@ final class LoggerTest extends TestCase
     private Logger $logger;
 
     #[DataProvider('logLevelsProvider')]
-    public function testLogLogsMessageWithoutContext(string $logLevel)
+    public function testLogLogsMessageWithProperLevel(string $logLevel)
     {
         $message = 'Simple message.';
 
