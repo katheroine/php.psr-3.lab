@@ -25,7 +25,8 @@ class Logger
     {
         file_put_contents(
             __DIR__ . '/../tests/fixtures/var/log/psr3logger.log',
-            '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': Some message.' . PHP_EOL
+            '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': Some message.' . PHP_EOL,
+            FILE_APPEND
         );
     }
 }
