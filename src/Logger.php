@@ -23,6 +23,10 @@ class Logger
      */
     public function log(mixed $level, string $message, array $context = []): void
     {
+        if (! in_array($level, array_values(new \ReflectionClass(\Psr\Log\LogLevel::class)->getConstants()))) {
+            throw new \Psr\Log\InvalidArgumentException($level . ' signalisation level is improper.');
+        }
+
         file_put_contents(
             __DIR__ . '/../tests/fixtures/var/log/psr3logger.log',
             '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': Some message.' . PHP_EOL,
