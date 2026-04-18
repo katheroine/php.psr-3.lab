@@ -23,5 +23,9 @@ class Logger
      */
     public function log(mixed $level, string $message, array $context = []): void
     {
+        file_put_contents(
+            __DIR__ . '/../tests/fixtures/var/log/psr3logger.log',
+            strtoupper($level) . ': Simple message.' . PHP_EOL
+        );
     }
 }
