@@ -28,8 +28,9 @@ final class LoggerTest extends TestCase
      */
     private Logger $logger;
 
+    #[Test]
     #[DataProvider('logLevelsProvider')]
-    public function testLogLogsMessageWithProperLevel(string $logLevel)
+    public function logsMessageWithProperLevel(string $logLevel)
     {
         $message = 'Simple message.';
 
