@@ -35,7 +35,7 @@ final class LoggerTest extends TestCase
 
         $this->logger->log($logLevel, $message, []);
 
-        $expectedLog = $logLevel . ': ' . $message . PHP_EOL;
+        $expectedLog = strtoupper($logLevel) . ': ' . $message . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
