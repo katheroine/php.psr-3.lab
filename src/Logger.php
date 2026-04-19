@@ -21,7 +21,7 @@ class Logger
      *
      * @return void
      */
-    public function log(mixed $level, string $message, array $context = []): void
+    public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {
         if (! in_array($level, array_values(new \ReflectionClass(\Psr\Log\LogLevel::class)->getConstants()))) {
             throw new \Psr\Log\InvalidArgumentException($level . ' signalisation level is improper.');
