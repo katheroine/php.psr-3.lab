@@ -36,10 +36,11 @@ class Logger
 
     private function interpolateMessage(string $message, array $context): string
     {
+        $replacements = [];
         foreach ($context as $placeholderLabel => $replacement) {
-            $message = str_replace('{' . $placeholderLabel . '}', $replacement, $message);
+            $replacements['{' . $placeholderLabel . '}'] = $replacement;
         }
 
-        return $message;
+        return strtr($message, $replacements);
     }
 }
