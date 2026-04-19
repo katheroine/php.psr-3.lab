@@ -91,8 +91,22 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('messagesAndContextsProvider')]
+    public function logsMessageWithProperContext(string $message, array $context, string $expectedResult)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
-     * Provide log levels defined by standard.
+     * Provides allowed log levels defined by PSR-3 standard.
      *
      * @return array
      */
@@ -104,14 +118,14 @@ final class LoggerTest extends TestCase
             [Psr3LogLevel::CRITICAL],
             [Psr3LogLevel::ERROR],
             [Psr3LogLevel::WARNING],
-            [Psr3LogLevel::WARNING],
+            [Psr3LogLevel::NOTICE],
             [Psr3LogLevel::INFO],
             [Psr3LogLevel::DEBUG],
         ];
     }
 
     /**
-     * Provide improper log levels.
+     * Provides random not allowed log levels.
      *
      * @return array
      */
@@ -128,7 +142,7 @@ final class LoggerTest extends TestCase
     }
 
     /**
-     * Provide logged messages.
+     * Provides logged messages.
      *
      * @return array
      */
@@ -139,6 +153,67 @@ final class LoggerTest extends TestCase
             ['Greetings from the Moon.'],
             ['Penguins attack!'],
             ['Oh no, the technical debt is here'],
+        ];
+    }
+
+    /**
+     * Provides logged messages with placeholders
+     * and sets of corresponding context values
+     * with properly completed messages.
+     *
+     * @return array
+     */
+    public static function messagesAndContextsProvider(): array
+    {
+        return [
+            [
+                'message' => 'Videmus nunc {condition}!',
+                'context' => [
+                    'condition' => 'per speculum',
+                ],
+                'expectedResult' => 'Videmus nunc per speculum!'
+            ],
+            [
+                'message' => 'Videmus nunc {condition}!',
+                'context' => [
+                    'condition' => 'in aenigmate',
+                ],
+                'expectedResult' => 'Videmus nunc in aenigmate!'
+            ],
+            [
+                'message' => 'Omnis mundi {subiectum_1}, quasi {subiectum_2} et {subiectum_3}, nobis est in speculum.',
+                'context' => [
+                    'subiectum_1' => 'creatura',
+                    'subiectum_2' => 'liber',
+                    'unexistent_placeholder' => 'confitura',
+                    'subiectum_3' => 'pictura',
+                ],
+                'expectedResult' => 'Omnis mundi creatura, quasi liber et pictura, nobis est in speculum.'
+            ],
+            [
+                'message' => 'Omnis mundi {subiectum_1}, quasi {subiectum_2} et {subiectum_3}, nobis est in speculum.',
+                'context' => [
+                    'unexistent_placeholder' => 'agricultura',
+                    'subiectum_1' => 'causa',
+                    'subiectum_2' => 'arcanum',
+                    'subiectum_3' => 'mysterium',
+                ],
+                'expectedResult' => 'Omnis mundi causa, quasi arcanum et mysterium, nobis est in speculum.'
+            ],
+            [
+                'message' => 'Stat rosa pristing {1}, {2} nuda tenemus...',
+                'context' => [
+                    '2' => 'nomina',
+                ],
+                'expectedResult' => 'Stat rosa pristing {1}, nomina nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristing {1}, {2} nuda tenemus...',
+                'context' => [
+                    '3' => 'novina',
+                ],
+                'expectedResult' => 'Stat rosa pristing {1}, {2} nuda tenemus...'
+            ],
         ];
     }
 
