@@ -92,6 +92,20 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
+    public function logsStringableMessageProperly()
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $message = new class { public function __toString() { return 'Hi, there!'; } };
+        $this->logger->log(Psr3LogLevel::INFO, $message, []);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . (string) $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
+    #[Test]
     #[DataProvider('messagesAndContextsProvider')]
     public function logsMessageWithProperContext(string $message, array $context, string $expectedResult)
     {
