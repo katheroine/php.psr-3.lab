@@ -119,6 +119,23 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    public function improperlyDelimitedPlaceHolderIsSkippedInInterpolation()
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $message = "A { skipped } thing.";
+        $context = [
+            'skipped' => 'replaced',
+        ];
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -213,14 +230,6 @@ final class LoggerTest extends TestCase
                     'subiectum_3' => 'mysterium',
                 ],
                 'expectedResult' => 'Omnis mundi causa, quasi arcanum et mysterium, nobis est in speculum.'
-            ],
-            [
-                'message' => 'Stat rosa pristina { 1 }, { 2 } nuda tenemus...',
-                'context' => [
-                    '1' => 'nomine',
-                    '2' => 'nomina',
-                ],
-                'expectedResult' => 'Stat rosa pristina { 1 }, { 2 } nuda tenemus...'
             ],
             [
                 'message' => 'Stat rosa pristina {1}, {2} nuda tenemus...',
