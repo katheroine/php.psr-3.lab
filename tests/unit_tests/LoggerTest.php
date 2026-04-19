@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel as Psr3LogLevel;
 
 #[RunTestsInSeparateProcesses]
 final class LoggerTest extends TestCase
@@ -86,14 +87,14 @@ final class LoggerTest extends TestCase
     public static function properLogLevelsProvider(): array
     {
         return [
-            ['emergency'],
-            ['alert'],
-            ['critical'],
-            ['error'],
-            ['warning'],
-            ['notice'],
-            ['info'],
-            ['debug'],
+            [Psr3LogLevel::EMERGENCY],
+            [Psr3LogLevel::ALERT],
+            [Psr3LogLevel::CRITICAL],
+            [Psr3LogLevel::ERROR],
+            [Psr3LogLevel::WARNING],
+            [Psr3LogLevel::WARNING],
+            [Psr3LogLevel::INFO],
+            [Psr3LogLevel::DEBUG],
         ];
     }
 
