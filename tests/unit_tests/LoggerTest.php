@@ -12,11 +12,9 @@ namespace PHPLab\StandardPSR3;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel as Psr3LogLevel;
 
-#[RunTestsInSeparateProcesses]
 final class LoggerTest extends TestCase
 {
     private const string LOG_FILE_ABSOLUTE_PATH = __DIR__
@@ -120,7 +118,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    public function improperlyDelimitedPlaceHolderIsSkippedInInterpolation()
+    public function improperlyDelimitedPlaceholderIsSkippedInInterpolation()
     {
         $date = date('Y-m-d H:i:s');
 
@@ -131,6 +129,20 @@ final class LoggerTest extends TestCase
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
+    #[Test]
+    #[DataProvider('properPlaceholderLabelsAndMessagesProvider')]
+    public function properPlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
@@ -189,8 +201,8 @@ final class LoggerTest extends TestCase
 
     /**
      * Provides logged messages with placeholders
-     * and sets of corresponding context values
-     * with properly completed messages.
+     * with sets of corresponding context values
+     * and expected interpolation result.
      *
      * @return array
      */
@@ -252,6 +264,50 @@ final class LoggerTest extends TestCase
                     2 => 'nomina'
                 ],
                 'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
+            ],
+        ];
+    }
+
+
+    /**
+     * Provides placeholders compliant with the PSR-3 specification rule:
+     *
+     * Placeholder names SHOULD be composed only of the characters A-Z, a-z, 0-9,
+     * underscore _, and period ..
+     * The use of other characters is reserved for future modifications of the placeholders specification.
+     *
+     * with using them messages
+     * and expected interpolation result.
+     *
+     * @return array
+     */
+    public static function properPlaceholderLabelsAndMessagesProvider(): array
+    {
+        return [
+            [
+                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
+                'context' => ['name' => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {NAME}, nuda tenemus...',
+                'context' => ['NAME' => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {name_1}, nuda tenemus...',
+                'context' => ['name_1' => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {name.version}, nuda tenemus...',
+                'context' => ['name.version' => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {Name_Version.1}, nuda tenemus...',
+                'context' => ['Name_Version.1' => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
             ],
         ];
     }
