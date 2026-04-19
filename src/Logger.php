@@ -41,6 +41,6 @@ class Logger
             $replacements['{' . $placeholderLabel . '}'] = $replacement;
         }
 
-        return strtr($message, $replacements);
+        return strtr((string) $message, $replacements);
     }
 }
