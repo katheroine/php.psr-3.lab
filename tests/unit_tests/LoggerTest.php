@@ -215,6 +215,14 @@ final class LoggerTest extends TestCase
                 'expectedResult' => 'Omnis mundi causa, quasi arcanum et mysterium, nobis est in speculum.'
             ],
             [
+                'message' => 'Stat rosa pristina { 1 }, { 2 } nuda tenemus...',
+                'context' => [
+                    '1' => 'nomine',
+                    '2' => 'nomina',
+                ],
+                'expectedResult' => 'Stat rosa pristina { 1 }, { 2 } nuda tenemus...'
+            ],
+            [
                 'message' => 'Stat rosa pristina {1}, {2} nuda tenemus...',
                 'context' => [
                     '2' => 'nomina',
