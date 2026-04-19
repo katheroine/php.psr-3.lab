@@ -79,6 +79,20 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('messagesProvider')]
+    public function logsProperMessage(string $message)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, []);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provide log levels defined by standard.
      *
@@ -112,6 +126,21 @@ final class LoggerTest extends TestCase
             ['narcissistic personality disorder'],
             ['Swedish deluge'],
             ['Microsoft Windows'],
+        ];
+    }
+
+    /**
+     * Provide logged messages.
+     *
+     * @return array
+     */
+    public static function messagesProvider(): array
+    {
+        return [
+            ['Hello, world!'],
+            ['Greetings from the Moon.'],
+            ['Penguins attack!'],
+            ['Oh no, the technical debt is here'],
         ];
     }
 
