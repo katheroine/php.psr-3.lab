@@ -29,8 +29,17 @@ class Logger
 
         file_put_contents(
             __DIR__ . '/../tests/fixtures/var/log/psr3logger.log',
-            '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': ' . $message . PHP_EOL,
+            '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': ' . $this->interpolateMessage($message, $context) . PHP_EOL,
             FILE_APPEND
         );
+    }
+
+    private function interpolateMessage(string $message, array $context): string
+    {
+        foreach ($context as $placeholderLabel => $replacement) {
+            $message = str_replace('{' . $placeholderLabel . '}', $replacement, $message);
+        }
+
+        return $message;
     }
 }
