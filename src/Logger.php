@@ -34,7 +34,7 @@ class Logger
         );
     }
 
-    private function interpolateMessage(string $message, array $context): string
+    private function interpolateMessage(string|\Stringable $message, array $context): string
     {
         $replacements = [];
         foreach ($context as $placeholderLabel => $replacement) {
