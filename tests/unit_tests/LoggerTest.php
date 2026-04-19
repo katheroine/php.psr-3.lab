@@ -19,8 +19,6 @@ use Psr\Log\LogLevel as Psr3LogLevel;
 #[RunTestsInSeparateProcesses]
 final class LoggerTest extends TestCase
 {
-    private const string LOG_LEVEL_EMERGENCY = 'emergency';
-
     private const string LOG_FILE_ABSOLUTE_PATH = __DIR__
         . DIRECTORY_SEPARATOR . '/../fixtures/var/log/psr3logger.log';
 
@@ -62,18 +60,18 @@ final class LoggerTest extends TestCase
         $message = 'Some message.';
 
         $date1 = date('Y-m-d H:i:s');
-        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
+        $this->logger->log(Psr3LogLevel::EMERGENCY, $message, []);
 
         $date2 = date('Y-m-d H:i:s');
-        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
+        $this->logger->log(Psr3LogLevel::EMERGENCY, $message, []);
 
         $date3 = date('Y-m-d H:i:s');
-        $this->logger->log(self::LOG_LEVEL_EMERGENCY, $message, []);
+        $this->logger->log(Psr3LogLevel::EMERGENCY, $message, []);
 
         $expectedLog =
-            '[' . $date1 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL
-            . '[' . $date2 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL
-            . '[' . $date3 . '] ' . strtoupper(self::LOG_LEVEL_EMERGENCY) . ': ' . $message . PHP_EOL;
+            '[' . $date1 . '] ' . strtoupper(Psr3LogLevel::EMERGENCY) . ': ' . $message . PHP_EOL
+            . '[' . $date2 . '] ' . strtoupper(Psr3LogLevel::EMERGENCY) . ': ' . $message . PHP_EOL
+            . '[' . $date3 . '] ' . strtoupper(Psr3LogLevel::EMERGENCY) . ': ' . $message . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
