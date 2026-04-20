@@ -532,7 +532,7 @@ final class LoggerTest extends TestCase
     }
 
     /**
-     * Provides non-stringable replacements.
+     * Provides names of the log files.
      *
      * @return array
      */
