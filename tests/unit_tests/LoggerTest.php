@@ -239,19 +239,17 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    public function exceptionStacktraceIsUsedAsReplacementIfPlaceholderLabelIsException()
+    public function exceptionPlaceholderLabelAndReplacementIsUsedInInterpolation()
     {
         $date = date('Y-m-d H:i:s');
 
         $message = "A {exception} thing.";
-        $exception = new \Exception('replaced');
         $context = [
-            'exception' => $exception,
+            'exception' => new \Exception('replaced'),
         ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
-        $stacktrace = $exception->getTraceAsString();
-        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': A ' . $stacktrace . ' thing.' . PHP_EOL;
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': A replaced thing.' . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
