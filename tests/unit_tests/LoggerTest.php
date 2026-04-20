@@ -137,13 +137,18 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('properPlaceholderLabelsInContextsProvider')]
-    public function properPlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    #[DataProvider('properPlaceholderLabelsProvider')]
+    public function properPlaceholderLabelIsUsedInInterpolation(string $placeholderLabel)
     {
         $date = date('Y-m-d H:i:s');
 
+        $message = 'Hello, {' . $placeholderLabel . '}! How are you?';
+        $context = [
+            $placeholderLabel => 'world',
+        ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
+        $expectedResult = 'Hello, world! How are you?';
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
@@ -151,11 +156,15 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('improperPlaceholderLabelsInContextsProvider')]
-    public function improperPlaceholderLabelIsSkippedInInterpolation(string $message, array $context)
+    #[DataProvider('improperPlaceholderLabelsProvider')]
+    public function improperPlaceholderLabelIsSkippedInInterpolation(string $placeholderLabel)
     {
         $date = date('Y-m-d H:i:s');
 
+        $message = 'Hello, {' . $placeholderLabel . '}! How are you?';
+        $context = [
+            $placeholderLabel => 'world',
+        ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
@@ -165,13 +174,18 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('stringablePlaceholderLabelsInContextsProvider')]
-    public function stringablePlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    #[DataProvider('stringablePlaceholderLabelsProvider')]
+    public function stringablePlaceholderLabelIsUsedInInterpolation(mixed $placeholderLabel)
     {
         $date = date('Y-m-d H:i:s');
 
+        $message = 'Hello, {' . $placeholderLabel . '}! How are you?';
+        $context = [
+            $placeholderLabel => 'world',
+        ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
+        $expectedResult = 'Hello, world! How are you?';
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
@@ -180,12 +194,17 @@ final class LoggerTest extends TestCase
 
     #[Test]
     #[DataProvider('stringableReplacementsInContextsProvider')]
-    public function stringableReplacementIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    public function stringableReplacementIsUsedInInterpolation(mixed $replacement)
     {
         $date = date('Y-m-d H:i:s');
 
+        $message = 'Hello, {some_placeholder}! How are you?';
+        $context = [
+            'some_placeholder' => $replacement,
+        ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
+        $expectedResult = 'Hello, ' . (string) $replacement . '! How are you?';
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
@@ -193,11 +212,15 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('nonstringableReplacementsInContextsProvider')]
-    public function nonstringableReplacementIsSkippedInInterpolation(string $message, array $context)
+    #[DataProvider('nonstringableReplacementsProvider')]
+    public function nonstringableReplacementIsSkippedInInterpolation(mixed $replacement)
     {
         $date = date('Y-m-d H:i:s');
 
+        $message = 'Hello, {some_placeholder}! How are you?';
+        $context = [
+            'some_placeholder' => $replacement,
+        ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
@@ -408,147 +431,83 @@ final class LoggerTest extends TestCase
     }
 
     /**
-     * Provides placeholders compliant with the PSR-3 specification rule:
+     * Provides placeholder labels that should be used
+     * because they're compliant with the PSR-3 specification rule:
      *
      * Placeholder names SHOULD be composed only of the characters A-Z, a-z, 0-9,
      * underscore _, and period ..
      * The use of other characters is reserved for future modifications of the placeholders specification.
      *
-     * with using them messages
-     * and expected interpolation result.
-     *
      * @return array
      */
-    public static function properPlaceholderLabelsInContextsProvider(): array
+    public static function properPlaceholderLabelsProvider(): array
     {
         return [
-            [
-                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
-                'context' => ['name' => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {NAME}, nuda tenemus...',
-                'context' => ['NAME' => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {name_1}, nuda tenemus...',
-                'context' => ['name_1' => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {name.version}, nuda tenemus...',
-                'context' => ['name.version' => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {Name_Version.1}, nuda tenemus...',
-                'context' => ['Name_Version.1' => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
-            ],
+            ['name'],
+            ['NAME'],
+            ['name_1'],
+            ['name.version'],
+            ['Name_Version.1'],
         ];
     }
 
     /**
-     * Provides placeholders not compliant with the PSR-3 specification rule:
+     * Provides placeholder labels that should be skipped
+     * because they're not compliant with the PSR-3 specification rule:
      *
      * Placeholder names SHOULD be composed only of the characters A-Z, a-z, 0-9,
      * underscore _, and period ..
      * The use of other characters is reserved for future modifications of the placeholders specification.
      *
-     * with using them messages.
-     *
      * @return array
      */
-    public static function improperPlaceholderLabelsInContextsProvider(): array
+    public static function improperPlaceholderLabelsProvider(): array
     {
         return [
-            [
-                'message' => 'Stat rosa pristina {invalid-key}, nuda tenemus...',
-                'context' => ['invalid-key' => 'nomine']
-            ],
-            [
-                'message' => 'Stat rosa pristina {invalid key}, nuda tenemus...',
-                'context' => ['invalid key' => 'nomine']
-            ],
-            [
-                'message' => 'Stat rosa pristina {invalid@key}, nuda tenemus...',
-                'context' => ['invalid@key' => 'nomine']
-            ],
+            ['invalid-key'],
+            ['invalid key'],
+            ['invalid@key'],
         ];
     }
 
     /**
-     * Provides stringable placeholders
-     * with using them messages.
+     * Provides stringable placeholder labels that should be used.
      *
      * @return array
      */
-    public static function stringablePlaceholderLabelsInContextsProvider(): array
+    public static function stringablePlaceholderLabelsProvider(): array
     {
         return [
-            [
-                'message' => 'Stat rosa pristina {1}, nomina nuda tenemus...',
-                'context' => [1 => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {0}, nomina nuda tenemus...',
-                'context' => [0 => 'nomine'],
-                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
-            ],
+            [1],
+            [0],
         ];
     }
 
     /**
-     * Provides stringable replacements
-     * with using them messages.
+     * Provides stringable replacements that should be used.
      *
      * @return array
      */
     public static function stringableReplacementsInContextsProvider(): array
     {
         return [
-            [
-                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
-                'context' => ['name' => 42],
-                'expectedResult' => 'Stat rosa pristina 42, nomina nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
-                'context' => ['name' => 3.14],
-                'expectedResult' => 'Stat rosa pristina 3.14, nomina nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
-                'context' => ['name' => true],
-                'expectedResult' => 'Stat rosa pristina 1, nomina nuda tenemus...'
-            ],
-            [
-                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
-                'context' => ['name' => new class { public function __toString(): string { return 'nomine'; } }],
-                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
-            ],
+            [44],
+            [3.14],
+            [true],
+            [new class { public function __toString(): string { return 'world'; } }],
         ];
     }
 
     /**
-     * Provides non-stringable replacements.
+     * Provides non-stringable replacements that should be skipped.
      *
      * @return array
      */
-    public static function nonstringableReplacementsInContextsProvider(): array
+    public static function nonstringableReplacementsProvider(): array
     {
         return [
-            [
-                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
-                'context' => ['name' => ['nomine']]
-            ],
-            [
-                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
-                'context' => ['name' => new \stdClass()]
-            ],
+            [['nomine']],
+            [new \stdClass()],
         ];
     }
 
