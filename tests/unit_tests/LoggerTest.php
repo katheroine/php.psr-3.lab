@@ -204,6 +204,23 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    public function exceptionPlaceholderLabelIsSkippedInInterpolation()
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $message = "A {exception} thing.";
+        $context = [
+            'exception' => 'replaced',
+        ];
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
