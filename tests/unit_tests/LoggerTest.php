@@ -148,6 +148,20 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('improperPlaceholderLabelsAndMessagesProvider')]
+    public function improperPlaceholderLabelIsSkippedInInterpolation(string $message, array $context)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -308,6 +322,35 @@ final class LoggerTest extends TestCase
                 'message' => 'Stat rosa pristina {Name_Version.1}, nuda tenemus...',
                 'context' => ['Name_Version.1' => 'nomine'],
                 'expectedResult' => 'Stat rosa pristina nomine, nuda tenemus...'
+            ],
+        ];
+    }
+
+    /**
+     * Provides placeholders not compliant with the PSR-3 specification rule:
+     *
+     * Placeholder names SHOULD be composed only of the characters A-Z, a-z, 0-9,
+     * underscore _, and period ..
+     * The use of other characters is reserved for future modifications of the placeholders specification.
+     *
+     * with using them messages.
+     *
+     * @return array
+     */
+    public static function improperPlaceholderLabelsAndMessagesProvider(): array
+    {
+        return [
+            [
+                'message' => 'Stat rosa pristina {invalid-key}, nuda tenemus...',
+                'context' => ['invalid-key' => 'nomine']
+            ],
+            [
+                'message' => 'Stat rosa pristina {invalid key}, nuda tenemus...',
+                'context' => ['invalid key' => 'nomine']
+            ],
+            [
+                'message' => 'Stat rosa pristina {invalid@key}, nuda tenemus...',
+                'context' => ['invalid@key' => 'nomine']
             ],
         ];
     }
