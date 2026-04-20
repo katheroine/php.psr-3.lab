@@ -103,7 +103,12 @@ final class LoggerTest extends TestCase
     {
         $date = date('Y-m-d H:i:s');
 
-        $message = new class { public function __toString() { return 'Hi, there!'; } };
+        $message = new class {
+            public function __toString()
+            {
+                return 'Hi, there!';
+            }
+        };
         $this->logger->log(Psr3LogLevel::INFO, $message, []);
 
         $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . (string) $message . PHP_EOL;
@@ -501,7 +506,13 @@ final class LoggerTest extends TestCase
             [44],
             [3.14],
             [true],
-            [new class { public function __toString(): string { return 'world'; } }],
+            [new class
+            {
+                public function __toString(): string
+                {
+                    return 'world';
+                }
+            }],
         ];
     }
 
