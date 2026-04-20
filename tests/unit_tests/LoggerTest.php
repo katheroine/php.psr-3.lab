@@ -176,6 +176,20 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('stringableReplacementsAndMessagesProvider')]
+    public function stringableReplacementIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -385,6 +399,38 @@ final class LoggerTest extends TestCase
             [
                 'message' => 'Stat rosa pristina {0}, nomina nuda tenemus...',
                 'context' => [0 => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
+            ],
+        ];
+    }
+
+    /**
+     * Provides stringable replacements
+     * with using them messages.
+     *
+     * @return array
+     */
+    public static function stringableReplacementsAndMessagesProvider(): array
+    {
+        return [
+            [
+                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
+                'context' => ['name' => 42],
+                'expectedResult' => 'Stat rosa pristina 42, nomina nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
+                'context' => ['name' => 3.14],
+                'expectedResult' => 'Stat rosa pristina 3.14, nomina nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
+                'context' => ['name' => true],
+                'expectedResult' => 'Stat rosa pristina 1, nomina nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
+                'context' => ['name' => new class { public function __toString(): string { return 'nomine'; } }],
                 'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
             ],
         ];
