@@ -17,8 +17,10 @@ use Psr\Log\LogLevel as Psr3LogLevel;
 
 final class LoggerTest extends TestCase
 {
-    private const string LOG_FILE_ABSOLUTE_PATH = __DIR__
-        . DIRECTORY_SEPARATOR . '/../fixtures/var/log/psr3logger.log';
+    private const string LOGS_DIRECTORY_ABSOLUTE_PATH = __DIR__
+        . DIRECTORY_SEPARATOR . '../fixtures/var/log/';
+    private const string LOG_FILE_ABSOLUTE_PATH = self::LOGS_DIRECTORY_ABSOLUTE_PATH
+        . 'psr3logger.log';
 
     /**
      * Instance of tested class.
@@ -253,6 +255,21 @@ final class LoggerTest extends TestCase
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
+    }
+
+    #[Test]
+    #[DataProvider('logFileNamesProvider')]
+    public function usesProvidedLogFilePath(string $logFileName)
+    {
+        $logFilePath = self::LOGS_DIRECTORY_ABSOLUTE_PATH . $logFileName;
+        $logger = new Logger($logFilePath);
+
+        $logger->log(Psr3LogLevel::INFO, 'Some message.', []);
+
+        $this->assertFileExists($logFilePath);
+        $this->assertStringContainsString('Some message.', file_get_contents($logFilePath));
+
+        file_put_contents($logFilePath, '');
     }
 
     /**
@@ -521,12 +538,26 @@ final class LoggerTest extends TestCase
     }
 
     /**
+     * Provides non-stringable replacements.
+     *
+     * @return array
+     */
+    public static function logFileNamesProvider(): array
+    {
+        return [
+            ['destiny_1.log'],
+            ['destiny_2.log'],
+            ['destiny_3.log'],
+        ];
+    }
+
+    /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp(): void
     {
-        $this->logger = new Logger();
+        $this->logger = new Logger(self::LOG_FILE_ABSOLUTE_PATH);
     }
 
     /**
