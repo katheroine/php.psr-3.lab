@@ -43,6 +43,10 @@ class Logger
                 continue;
             }
 
+            if ($replacement instanceof \Exception) {
+                $replacement = $replacement->getMessage();
+            }
+
             $replacements['{' . $placeholderLabel . '}'] = $replacement;
         }
 
