@@ -10,9 +10,10 @@ declare(strict_types=1);
 
 namespace PHPLab\StandardPSR3;
 
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class Logger
+class Logger implements LoggerInterface
 {
     /**
      * Logs file absolute path.
