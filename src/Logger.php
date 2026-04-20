@@ -38,9 +38,25 @@ class Logger
     {
         $replacements = [];
         foreach ($context as $placeholderLabel => $replacement) {
+            if (! $this->isPlaceholderLabelValid($placeholderLabel)) {
+                continue;
+            }
+
             $replacements['{' . $placeholderLabel . '}'] = $replacement;
         }
 
         return strtr((string) $message, $replacements);
+    }
+
+    /**
+     * Checks if placeholder label it compliant with the PSR-3 specification rule:
+     *
+     * Placeholder names SHOULD be composed only of the characters A-Z, a-z, 0-9,
+     * underscore _, and period ..
+     * The use of other characters is reserved for future modifications of the placeholders specification.
+     */
+    private function isPlaceholderLabelValid(mixed $placefolderLabel): bool
+    {
+        return (bool) preg_match('/^[A-Za-z0-9_.]+$/', (string) $placefolderLabel);
     }
 }
