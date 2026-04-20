@@ -39,7 +39,8 @@ class Logger
         $replacements = [];
         foreach ($context as $placeholderLabel => $replacement) {
             if (! $this->isPlaceholderLabelValid($placeholderLabel)
-                || ! $this->isReplacementValid($replacement)) {
+                || ! $this->isReplacementValid($replacement)
+                || $this->isPlaceholderException($placeholderLabel)) {
                 continue;
             }
 
@@ -47,6 +48,17 @@ class Logger
         }
 
         return strtr((string) $message, $replacements);
+    }
+
+    /**
+     * Checks if the placeholder has the special purpose - an exception,
+     * compliant with the PSR-3 specification rule:
+     *
+     * If an Exception object is passed in the context data, it MUST be in the 'exception' key.
+     */
+    private function isPlaceholderException(mixed $placeholder)
+    {
+        return ($placeholder === 'exception');
     }
 
     /**
