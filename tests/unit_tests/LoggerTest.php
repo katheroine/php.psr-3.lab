@@ -162,6 +162,20 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('stringablePlaceholderLabelsAndMessagesProvider')]
+    public function stringablePlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $expectedResult . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -282,7 +296,6 @@ final class LoggerTest extends TestCase
         ];
     }
 
-
     /**
      * Provides placeholders compliant with the PSR-3 specification rule:
      *
@@ -351,6 +364,28 @@ final class LoggerTest extends TestCase
             [
                 'message' => 'Stat rosa pristina {invalid@key}, nuda tenemus...',
                 'context' => ['invalid@key' => 'nomine']
+            ],
+        ];
+    }
+
+    /**
+     * Provides stringable placeholders
+     * with using them messages.
+     *
+     * @return array
+     */
+    public static function stringablePlaceholderLabelsAndMessagesProvider(): array
+    {
+        return [
+            [
+                'message' => 'Stat rosa pristina {1}, nomina nuda tenemus...',
+                'context' => [1 => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
+            ],
+            [
+                'message' => 'Stat rosa pristina {0}, nomina nuda tenemus...',
+                'context' => [0 => 'nomine'],
+                'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
             ],
         ];
     }
