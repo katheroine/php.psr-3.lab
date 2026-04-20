@@ -221,6 +221,23 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    public function exceptionReplacementIsUsedInInterpolation()
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $message = "A {placeholder} thing.";
+        $context = [
+            'placeholder' => new \Exception('replaced'),
+        ];
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': A replaced thing.' . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
