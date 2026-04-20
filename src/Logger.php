@@ -38,7 +38,8 @@ class Logger
     {
         $replacements = [];
         foreach ($context as $placeholderLabel => $replacement) {
-            if (! $this->isPlaceholderLabelValid($placeholderLabel)) {
+            if (! $this->isPlaceholderLabelValid($placeholderLabel)
+                || ! $this->isReplacementValid($replacement)) {
                 continue;
             }
 
@@ -58,5 +59,13 @@ class Logger
     private function isPlaceholderLabelValid(mixed $placefolderLabel): bool
     {
         return (bool) preg_match('/^[A-Za-z0-9_.]+$/', (string) $placefolderLabel);
+    }
+
+    /**
+     * Checks if the replacement can be used as a string.
+     */
+    private function isReplacementValid(mixed $replacement): bool
+    {
+        return (is_null($replacement) || is_scalar($replacement) || ($replacement instanceof \Stringable));
     }
 }
