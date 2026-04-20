@@ -44,7 +44,11 @@ class Logger
             }
 
             if ($replacement instanceof \Exception) {
-                $replacement = $replacement->getMessage();
+                if ($placeholderLabel == 'exception') {
+                    $replacement = $replacement->getTraceAsString();
+                } else {
+                    $replacement = $replacement->getMessage();
+                }
             }
 
             $replacements['{' . $placeholderLabel . '}'] = $replacement;
