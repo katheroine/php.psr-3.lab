@@ -13,6 +13,7 @@ namespace PHPLab\StandardPSR3;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface as Psr3LoggerInterface;
 use Psr\Log\LogLevel as Psr3LogLevel;
 
 final class LoggerTest extends TestCase
@@ -28,6 +29,12 @@ final class LoggerTest extends TestCase
      * @var Logger
      */
     private Logger $logger;
+
+    #[Test]
+    public function testImplementsPsrLoggerInterface()
+    {
+        $this->assertImplements($this->logger, Psr3LoggerInterface::class);
+    }
 
     #[Test]
     #[DataProvider('properLogLevelsProvider')]
@@ -561,6 +568,20 @@ final class LoggerTest extends TestCase
     protected function tearDown(): void
     {
         file_put_contents(self::LOG_FILE_ABSOLUTE_PATH, '');
+    }
+
+    /**
+     * Assert object class implements given interface.
+     *
+     * @param mixed  $object
+     * @param string $interface
+     */
+    private function assertImplements(mixed $object, string $interface): void
+    {
+        $implementedInterfaces = class_implements($object);
+        $implementsInterface = in_array($interface, $implementedInterfaces);
+
+        $this->assertTrue($implementsInterface);
     }
 
     private function getLoggedContent(): string
