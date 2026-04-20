@@ -137,7 +137,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('properPlaceholderLabelsAndMessagesProvider')]
+    #[DataProvider('properPlaceholderLabelsInContextsProvider')]
     public function properPlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
     {
         $date = date('Y-m-d H:i:s');
@@ -151,7 +151,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('improperPlaceholderLabelsAndMessagesProvider')]
+    #[DataProvider('improperPlaceholderLabelsInContextsProvider')]
     public function improperPlaceholderLabelIsSkippedInInterpolation(string $message, array $context)
     {
         $date = date('Y-m-d H:i:s');
@@ -165,7 +165,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('stringablePlaceholderLabelsAndMessagesProvider')]
+    #[DataProvider('stringablePlaceholderLabelsInContextsProvider')]
     public function stringablePlaceholderLabelIsUsedInInterpolation(string $message, array $context, string $expectedResult)
     {
         $date = date('Y-m-d H:i:s');
@@ -179,7 +179,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('stringableReplacementsAndMessagesProvider')]
+    #[DataProvider('stringableReplacementsInContextsProvider')]
     public function stringableReplacementIsUsedInInterpolation(string $message, array $context, string $expectedResult)
     {
         $date = date('Y-m-d H:i:s');
@@ -193,7 +193,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('nonstringableReplacementsAndMessagesProvider')]
+    #[DataProvider('nonstringableReplacementsInContextsProvider')]
     public function nonstringableReplacementIsSkippedInInterpolation(string $message, array $context)
     {
         $date = date('Y-m-d H:i:s');
@@ -419,7 +419,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function properPlaceholderLabelsAndMessagesProvider(): array
+    public static function properPlaceholderLabelsInContextsProvider(): array
     {
         return [
             [
@@ -461,7 +461,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function improperPlaceholderLabelsAndMessagesProvider(): array
+    public static function improperPlaceholderLabelsInContextsProvider(): array
     {
         return [
             [
@@ -485,7 +485,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function stringablePlaceholderLabelsAndMessagesProvider(): array
+    public static function stringablePlaceholderLabelsInContextsProvider(): array
     {
         return [
             [
@@ -507,7 +507,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function stringableReplacementsAndMessagesProvider(): array
+    public static function stringableReplacementsInContextsProvider(): array
     {
         return [
             [
@@ -538,7 +538,7 @@ final class LoggerTest extends TestCase
      *
      * @return array
      */
-    public static function nonstringableReplacementsAndMessagesProvider(): array
+    public static function nonstringableReplacementsInContextsProvider(): array
     {
         return [
             [
