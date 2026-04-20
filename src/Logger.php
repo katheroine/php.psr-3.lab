@@ -13,6 +13,18 @@ namespace PHPLab\StandardPSR3;
 class Logger
 {
     /**
+     * Logs file absolute path.
+     *
+     * @var string
+     */
+    private string $logsFilePath;
+
+    public function __construct(string $logsFilePath)
+    {
+        $this->logsFilePath = $logsFilePath;
+    }
+
+    /**
      * Logs with an arbitrary level.
      *
      * @param mixed $level
@@ -28,7 +40,7 @@ class Logger
         }
 
         file_put_contents(
-            __DIR__ . '/../tests/fixtures/var/log/psr3logger.log',
+            $this->logsFilePath,
             '[' . date('Y-m-d H:i:s') . '] ' . strtoupper($level) . ': ' . $this->interpolateMessage($message, $context) . PHP_EOL,
             FILE_APPEND
         );
