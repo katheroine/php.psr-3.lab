@@ -258,6 +258,21 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('levelSpecificMethodsWithLevelsProvider')]
+    public function levelSpecificMethodLogsWithProperLevel(string $method, string $expectedLevel)
+    {
+        $message = 'Some message.';
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->$method($message, []);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper($expectedLevel) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
+    #[Test]
     #[DataProvider('logFileNamesProvider')]
     public function usesProvidedLogFilePath(string $logFileName)
     {
@@ -534,6 +549,26 @@ final class LoggerTest extends TestCase
                 'message' => 'Stat rosa pristina {name}, nuda tenemus...',
                 'context' => ['name' => new \stdClass()]
             ],
+        ];
+    }
+
+    /**
+     * Provides level-specific log methods
+     * with its corresponding loging levels.
+     *
+     * @return array
+     */
+    public static function levelSpecificMethodsWithLevelsProvider(): array
+    {
+        return [
+            ['emergency', Psr3LogLevel::EMERGENCY],
+            ['alert', Psr3LogLevel::ALERT],
+            ['critical', Psr3LogLevel::CRITICAL],
+            ['error', Psr3LogLevel::ERROR],
+            ['warning', Psr3LogLevel::WARNING],
+            ['notice', Psr3LogLevel::NOTICE],
+            ['info', Psr3LogLevel::INFO],
+            ['debug', Psr3LogLevel::DEBUG],
         ];
     }
 
