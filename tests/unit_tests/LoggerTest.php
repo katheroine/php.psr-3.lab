@@ -190,6 +190,20 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    #[DataProvider('nonstringableReplacementsAndMessagesProvider')]
+    public function nonstringableReplacementIsSkippedInInterpolation(string $message, array $context)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -432,6 +446,25 @@ final class LoggerTest extends TestCase
                 'message' => 'Stat rosa pristina {name}, nomina nuda tenemus...',
                 'context' => ['name' => new class { public function __toString(): string { return 'nomine'; } }],
                 'expectedResult' => 'Stat rosa pristina nomine, nomina nuda tenemus...'
+            ],
+        ];
+    }
+
+    /**
+     * Provides non-stringable replacements.
+     *
+     * @return array
+     */
+    public static function nonstringableReplacementsAndMessagesProvider(): array
+    {
+        return [
+            [
+                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
+                'context' => ['name' => ['nomine']]
+            ],
+            [
+                'message' => 'Stat rosa pristina {name}, nuda tenemus...',
+                'context' => ['name' => new \stdClass()]
             ],
         ];
     }
