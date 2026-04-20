@@ -205,7 +205,7 @@ final class LoggerTest extends TestCase
     }
 
     #[Test]
-    public function exceptionPlaceholderLabelIsSkippedInInterpolation()
+    public function exceptionPlaceholderLabelIsUsedInInterpolation()
     {
         $date = date('Y-m-d H:i:s');
 
@@ -215,7 +215,7 @@ final class LoggerTest extends TestCase
         ];
         $this->logger->log(Psr3LogLevel::INFO, $message, $context);
 
-        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': ' . $message . PHP_EOL;
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': A replaced thing.' . PHP_EOL;
         $actualLog = $this->getLoggedContent();
 
         $this->assertEquals($expectedLog, $actualLog);
