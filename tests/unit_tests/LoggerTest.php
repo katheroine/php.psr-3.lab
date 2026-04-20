@@ -238,6 +238,25 @@ final class LoggerTest extends TestCase
         $this->assertEquals($expectedLog, $actualLog);
     }
 
+    #[Test]
+    public function exceptionStacktraceIsUsedAsReplacementIfPlaceholderLabelIsException()
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $message = "A {exception} thing.";
+        $exception = new \Exception('replaced');
+        $context = [
+            'exception' => $exception,
+        ];
+        $this->logger->log(Psr3LogLevel::INFO, $message, $context);
+
+        $stacktrace = $exception->getTraceAsString();
+        $expectedLog = '[' . $date . '] ' . strtoupper(Psr3LogLevel::INFO) . ': A ' . $stacktrace . ' thing.' . PHP_EOL;
+        $actualLog = $this->getLoggedContent();
+
+        $this->assertEquals($expectedLog, $actualLog);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
