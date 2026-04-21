@@ -21,6 +21,7 @@ use ReflectionClass;
 class Logger implements LoggerInterface
 {
     private const string EXCEPTION_MESSAGE_LOG_FILE_NOT_FOUND = 'Log destination file %s does not exist';
+    private const string EXCEPTION_MESSAGE_LOG_FILE_NOT_ACCESSIBLE = 'Log destination file %s is unaccessible';
 
     /**
      * Logs file absolute path.
@@ -240,6 +241,12 @@ class Logger implements LoggerInterface
         if (! file_exists($this->logsFilePath)) {
             throw new RuntimeException(
                 sprintf(static::EXCEPTION_MESSAGE_LOG_FILE_NOT_FOUND, $this->logsFilePath)
+            );
+        }
+
+        if (! is_writable($this->logsFilePath)) {
+            throw new RuntimeException(
+                sprintf(static::EXCEPTION_MESSAGE_LOG_FILE_NOT_ACCESSIBLE, $this->logsFilePath)
             );
         }
 
