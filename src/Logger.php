@@ -15,10 +15,13 @@ use Psr\Log\LogLevel;
 use Psr\Log\InvalidArgumentException;
 use Stringable;
 use Exception;
+use RuntimeException;
 use ReflectionClass;
 
 class Logger implements LoggerInterface
 {
+    private const string EXCEPTION_MESSAGE_LOG_FILE_NOT_FOUND = 'Log destination file %s does not exist';
+
     /**
      * Logs file absolute path.
      *
@@ -235,7 +238,9 @@ class Logger implements LoggerInterface
     private function writeLog(string $logContent): void
     {
         if (! file_exists($this->logsFilePath)) {
-            throw new \RuntimeException('Log destination file ' . $this->logsFilePath . ' does not exist');
+            throw new RuntimeException(
+                sprintf(static::EXCEPTION_MESSAGE_LOG_FILE_NOT_FOUND, $this->logsFilePath)
+            );
         }
 
         file_put_contents($this->logsFilePath, $logContent, FILE_APPEND);
