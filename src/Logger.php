@@ -234,6 +234,10 @@ class Logger implements LoggerInterface
      */
     private function writeLog(string $logContent): void
     {
+        if (! file_exists($this->logsFilePath)) {
+            throw new \RuntimeException('Log destination file ' . $this->logsFilePath . ' does not exist');
+        }
+
         file_put_contents($this->logsFilePath, $logContent, FILE_APPEND);
     }
 }
