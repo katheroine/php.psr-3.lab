@@ -15,14 +15,14 @@ docker compose up -d
 After creating the *Docker container* the *Composer dependencies* have to be defined and installed:
 
 ```console
-docker compose exec application composer require --dev squizlabs/php_codesniffer --dev phpunit/phpunit \
-&& docker compose exec application composer install
+docker exec --user root psr-3-example-app composer require --dev squizlabs/php_codesniffer --dev phpunit/phpunit \
+&& docker exec --user root psr-3-example-app composer install
 ```
 
 Tom make *PHP Code Sniffer commands* easily accessible run:
 
 ```console
-docker compose exec application bash -c "
+docker exec --user root psr-3-example-app bash -c "
     ln -s /code/vendor/bin/phpcs /usr/local/bin/phpcs;
     ln -s /code/vendor/bin/phpcbf /usr/local/bin/phpcbf;
     ln -s /code/vendor/bin/phpunit /usr/local/bin/phpunit;
@@ -56,19 +56,25 @@ docker exec psr-3-example-app phpunit
 To update *Composer dependencies* use command:
 
 ```console
-docker exec psr-3-example-app composer update
+docker exec --user root psr-3-example-app composer update
 ```
 
 To update *Composer autoloader* cache use use command:
 
 ```console
-docker exec psr-3-example-app composer dump-autoload
+docker exec --user root psr-3-example-app composer dump-autoload
 ```
 
-To login into the *Docker container* use command:
+To login into the *Docker container* as default user use command:
 
 ```console
 docker exec -it psr-3-example-app /bin/bash
+```
+
+To login into the *Docker container* as root user use command:
+
+```console
+docker exec --user root -it psr-3-example-app /bin/bash
 ```
 
 **License**
