@@ -22,6 +22,7 @@ final class LoggerTest extends TestCase
         . DIRECTORY_SEPARATOR . '../fixtures/var/log/';
     private const string LOG_FILE_ABSOLUTE_PATH = self::LOGS_DIRECTORY_ABSOLUTE_PATH
         . 'psr3logger.log';
+    private const int UNACCESSIBLE_LOG_FILE_PERMISSIONS = 0000;
 
     /**
      * Instance of tested class.
@@ -334,6 +335,18 @@ final class LoggerTest extends TestCase
         $logger->log(Psr3LogLevel::INFO, 'Some message.', []);
     }
 
+    #[Test]
+    #[DataProvider('unaccessibleFileNamesProvider')]
+    public function properlyHandlesUnaccessibleFilePath(string $unaccessibleFileName)
+    {
+        $logFilePath = self::LOGS_DIRECTORY_ABSOLUTE_PATH . $unaccessibleFileName;
+        $logger = new Logger($logFilePath);
+
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('Log destination file ' . $logFilePath . ' is unaccessible');
+        $logger->log(Psr3LogLevel::INFO, 'Some message.', []);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -590,12 +603,27 @@ final class LoggerTest extends TestCase
     }
 
     /**
+     * Provides names of unaccessible files.
+     *
+     * @return array
+     */
+    public static function unaccessibleFileNamesProvider(): array
+    {
+        return [
+            ['unaccessible_1.log'],
+            ['unaccessible_2.log'],
+            ['unaccessible_3.log'],
+        ];
+    }
+
+    /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp(): void
     {
         $this->logger = new Logger(self::LOG_FILE_ABSOLUTE_PATH);
+        $this->ensureAboutUnaccessibleLogFiles();
     }
 
     /**
@@ -624,5 +652,18 @@ final class LoggerTest extends TestCase
     private function getLoggedContent(): string
     {
         return file_get_contents(self::LOG_FILE_ABSOLUTE_PATH);
+    }
+
+    /**
+     * Warning! Wonks for *nix systems only.
+     */
+    private function ensureAboutUnaccessibleLogFiles(): void
+    {
+        $unaccessibleFileNames = array_column($this->unaccessibleFileNamesProvider(), 0);
+
+        foreach ($unaccessibleFileNames as $unaccessibleFileName) {
+            $logFilePath = self::LOGS_DIRECTORY_ABSOLUTE_PATH . $unaccessibleFileName;
+            chmod($logFilePath, self::UNACCESSIBLE_LOG_FILE_PERMISSIONS);
+        }
     }
 }
