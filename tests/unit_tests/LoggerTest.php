@@ -322,6 +322,18 @@ final class LoggerTest extends TestCase
         file_put_contents($logFilePath, '');
     }
 
+    #[Test]
+    #[DataProvider('unexistenFileNamesProvider')]
+    public function properlyHandlesUnexistentFilePath(string $unexistentFileName)
+    {
+        $logFilePath = self::LOGS_DIRECTORY_ABSOLUTE_PATH . $unexistentFileName;
+        $logger = new Logger($logFilePath);
+
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('Log destination file ' . $logFilePath . ' does not exist');
+        $logger->log(Psr3LogLevel::INFO, 'Some message.', []);
+    }
+
     /**
      * Provides allowed log levels defined by PSR-3 standard.
      *
@@ -560,6 +572,20 @@ final class LoggerTest extends TestCase
             ['destiny_1.log'],
             ['destiny_2.log'],
             ['destiny_3.log'],
+        ];
+    }
+
+    /**
+     * Provides names of unexistent files.
+     *
+     * @return array
+     */
+    public static function unexistenFileNamesProvider(): array
+    {
+        return [
+            ['unexistent_1.log'],
+            ['unexistent_2.log'],
+            ['unexistent_3.log'],
         ];
     }
 
